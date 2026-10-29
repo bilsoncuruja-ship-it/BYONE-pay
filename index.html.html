@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BYONE pay - Validador de Pagamentos de Angola</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .phone-frame {
+            max-width: 414px;
+            height: 844px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 95%; }
+            100% { top: 0%; }
+        }
+        .scanner-line {
+            animation: scan 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 flex items-center justify-center min-h-screen p-0 sm:p-4">
+
+    <!-- Mobile Device Container -->
+    <div class="phone-frame w-full bg-slate-900 sm:rounded-[40px] flex flex-col overflow-hidden relative border border-slate-800">
+        
+        <!-- Status Bar -->
+        <div class="bg-slate-950 px-6 py-3 flex justify-between items-center text-xs text-slate-400 select-none z-30">
+            <span>13:42</span>
+            <div class="w-24 h-4 bg-slate-900 rounded-full mx-auto absolute left-1/2 transform -translate-x-1/2 top-2"></div>
+            <div class="flex space-x-2 items-center">
+                <i class="fa-solid fa-signal"></i>
+                <i class="fa-solid fa-wifi"></i>
+                <i class="fa-solid fa-battery-three-quarters text-emerald-400"></i>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="bg-slate-950/80 backdrop-blur-md px-6 py-4 flex items-center justify-between border-b border-slate-800/60 z-20">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center shadow-lg shadow-red-600/20">
+                    <i class="fa-solid fa-shield-halved text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight text-white flex items-center gap-1.5">
+                        BYONE <span class="text-red-500 text-xs px-1.5 py-0.5 bg-red-500/10 rounded-md font-semibold border border-red-500/20">AO</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400">Verificador Multicaixa & Bancos</p>
+                </div>
+            </div>
+            <button onclick="switchTab('history')" class="relative p-2 text-slate-400 hover:text-white transition">
+                <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                <span id="badge-count" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+            </button>
+        </header>
+
+        <!-- Main Content Area (Scrollable) -->
+        <main id="app-content" class="flex-1 overflow-y-auto pb-24 relative">
+            
+            <!-- TAB 1: INÍCIO / DASHBOARD -->
+            <div id="tab-home" class="p-6 space-y-6">
+                <!-- Banner Alerta AO -->
+                <div class="bg-gradient-to-r from-red-950/50 to-slate-900 border border-red-500/20 rounded-2xl p-4 relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-red-500/10 rounded-full blur-xl"></div>
+                    <div class="flex items-start space-x-3 relative z-10">
+                        <div class="p-2 bg-red-500/20 rounded-lg text-red-400 mt-0.5">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-semibold text-white">Segurança em Transações</h2>
+                            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+                                Valide comprovativos de transferência (BAI, BFA, BIC, Atlântico, etc.) instantaneamente com algoritmo Módulo 97 AO06.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="switchTab('validate')" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/50 p-4 rounded-2xl text-left transition group">
+                        <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-qrcode text-lg"></i>
+                        </div>
+                        <h3 class="font-semibold text-sm text-white">Validar Talão</h3>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Ler imagem ou colar texto</p>
+                    </button>
+                    <button onclick="switchTab('banks')" class="bg-slate-800/60 hover:bg-slate-800 border border-slate-700/50 p-4 rounded-2xl text-left transition group">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                            <i class="fa-solid fa-building-columns text-lg"></i>
+                        </div>
+                        <h3 class="font-semibold text-sm text-white">Bancos AO</h3>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Códigos SWIFT & IBAN</p>
+                    </button>
+                </div>
+
+                <!-- Estatísticas Recentes -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Atividade Recente</h3>
+                        <button onclick="switchTab('history')" class="text-xs text-red-400 hover:underline">Ver tudo</button>
+                    </div>
+                    <div id="home-recent-list" class="space-y-2">
+                        <div class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between text-xs text-slate-400 text-center py-6">
+                            <span class="w-full">Nenhuma verificação recente registada.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: VALIDAR COMPROVATIVO -->
+            <div id="tab-validate" class="p-6 space-y-6 hidden">
+                <div>
+                    <h2 class="text-lg font-bold text-white">Análise de Comprovativo</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Insira os dados da transferência ou cole o texto do SMS/Talão digital.</p>
+                </div>
+
+                <!-- Input Method Tabs -->
+                <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-medium">
+                    <button onclick="setMode('text')" id="btn-mode-text" class="flex-1 py-2 rounded-lg bg-slate-800 text-white shadow-sm transition">Texto / SMS</button>
+                    <button onclick="setMode('upload')" id="btn-mode-upload" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition">Imagem / Talão</button>
+                </div>
+
+                <!-- Text Mode Box -->
+                <div id="input-text-container" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5">Cole o texto do SMS ou Dados do Talão:</label>
+                        <textarea id="receipt-text-input" rows="5" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-red-500 transition placeholder:text-slate-600" placeholder="Ex: Transferencia bem sucedida. Ref: TR20260305ABC. Montante: 45.000,00 Kz. De: AO06 0006... Para: AO06 0040... Data: 05/03/2026"></textarea>
+                    </div>
+                    <button onclick="runAudit()" class="w-full py-3.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold rounded-xl text-sm shadow-lg shadow-red-600/20 transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                        <span>Executar Auditoria Inteligente</span>
+                    </button>
+                </div>
+
+                <!-- Upload Mode Box -->
+                <div id="input-upload-container" class="space-y-4 hidden">
+                    <label class="border-2 border-dashed border-slate-800 hover:border-red-500/50 rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer bg-slate-950/40 transition group">
+                        <div class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 group-hover:text-red-400 group-hover:scale-110 transition mb-3">
+                            <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-slate-300">Carregar imagem do comprovativo</span>
+                        <span class="text-[10px] text-slate-500 mt-1">PNG, JPG ou Screenshot de Telemóvel</span>
+                        <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+                    </label>
+                    <div id="preview-container" class="hidden relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 p-2 text-center">
+                        <img id="image-preview" class="max-h-48 mx-auto rounded-lg object-contain">
+                        <div id="scanner-fx" class="absolute inset-x-0 h-1 bg-red-500 scanner-line shadow-[0_0_12px_rgba(239,68,68,1)] hidden"></div>
+                        <p id="scan-status-text" class="text-[11px] text-slate-400 mt-2">Pronto para escanear imagem...</p>
+                    </div>
+                    <button id="btn-scan-image" onclick="runImageAudit()" class="w-full py-3.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold rounded-xl text-sm shadow-lg shadow-red-600/20 transition hidden items-center justify-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Processar Leitura Ótica (OCR)</span>
+                    </button>
+                </div>
+
+                <!-- Results Section (Hidden by default) -->
+                <div id="audit-results" class="hidden space-y-4 pt-2">
+                    <div class="border border-slate-800 rounded-2xl p-4 bg-slate-950 space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-900">
+                            <div class="flex items-center space-x-2.5">
+                                <div id="res-icon-box" class="w-9 h-9 rounded-xl flex items-center justify-center text-white">
+                                    <i id="res-icon" class="fa-solid"></i>
+                                </div>
+                                <div>
+                                    <h4 id="res-title" class="font-bold text-sm">Estado do Talão</h4>
+                                    <p id="res-subtitle" class="text-[11px] text-slate-400">Análise concluída</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="res-score" class="text-sm font-bold">--%</span>
+                                <p class="text-[10px] text-slate-500">Confiança</p>
+                            </div>
+                        </div>
+
+                        <!-- Detalhes Extraídos -->
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60">
+                                <span class="text-[10px] text-slate-500 block">Banco Emissor</span>
+                                <strong id="res-bank" class="text-slate-200">--</strong>
+                            </div>
+                            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60">
+                                <span class="text-[10px] text-slate-500 block">Montante</span>
+                                <strong id="res-amount" class="text-emerald-400">-- Kz</strong>
+                            </div>
+                        </div>
+
+                        <!-- Checklists de Validade -->
+                        <div class="space-y-2 text-xs" id="res-checks">
+                            <!-- Inserido via JS -->
+                        </div>
+
+                        <button onclick="saveCurrentAudit()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-200 font-medium rounded-xl border border-slate-800 text-xs transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-bookmark"></i>
+                            <span>Guardar no Histórico</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: HISTÓRICO -->
+            <div id="tab-history" class="p-6 space-y-4 hidden">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Histórico de Validações</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Registo local dos comprovativos analisados.</p>
+                    </div>
+                    <button onclick="clearHistory()" class="text-xs text-red-400 hover:underline">Limpar</button>
+                </div>
+                <div id="history-list" class="space-y-3">
+                    <!-- Dinâmico -->
+                </div>
+            </div>
+
+            <!-- TAB 4: BANCOS DE ANGOLA -->
+            <div id="tab-banks" class="p-6 space-y-4 hidden">
+                <div>
+                    <h2 class="text-lg font-bold text-white">Bancos em Angola</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Diretório oficial de códigos e prefixes IBAN (AO06).</p>
+                </div>
+                <div class="space-y-2.5">
+                    <!-- Banco List -->
+                    <div class="p-3.5 bg-slate-900 border border-slate-800/80 rounded-2xl flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-xl bg-red-600/10 text-red-500 font-bold flex items-center justify-center text-xs">BAI</div>
+                            <div>
+                                <h4 class="text-xs font-semibold text-white">Banco Angolano de Investimentos</h4>
+                                <p class="text-[10px] text-slate-400">Prefixo IBAN: <code class="text-red-400">0040</code></p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald
